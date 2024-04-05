@@ -1,4 +1,9 @@
-const { sum, deleteByID, filterEvenNumbers } = require("../utils/helper");
+const {
+  sum,
+  deleteByID,
+  filterEvenNumbers,
+  addUserAndReturnTimestamp,
+} = require("../utils/helper");
 const users = require("../db.json");
 const fs = require("fs");
 
@@ -27,6 +32,56 @@ describe("Filter function", () => {
     const numbers = [1, 3, 5, 7, 9];
     const filteredNumbers = filterEvenNumbers(numbers);
     expect(filteredNumbers).toEqual([]);
+  });
+});
+
+describe("addUserAndReturnTimestamp function", () => {
+  let originalUsers;
+
+  beforeEach(() => {
+    // Mocking the originalUsers array
+    originalUsers = [
+      {
+        id: 1,
+        username: "mic_smith",
+        name: "Smith Mic",
+        email: "mic@gmail.com",
+        age: 35,
+        address: {
+          street: "Center street",
+          city: "Calgary",
+          province: "AB",
+          zipcode: "T2N 1N4",
+          country: "Canada",
+        },
+      },
+    ];
+  });
+
+  test("Adds a new user and returns the user with the timestamp", () => {
+    const newUser = {
+      id: 2,
+      username: "mark_popo",
+      name: "Jane Smith",
+      email: "popo@gmail.com",
+      age: 28,
+      address: {
+        street: "456 Bedding St",
+        city: "Calgary",
+        province: "AB",
+        zipcode: "T2N 1N5",
+        country: "Canada",
+      },
+    };
+
+    const { user, timestamp } = addUserAndReturnTimestamp(
+      newUser,
+      originalUsers
+    );
+
+    expect(user).toEqual(newUser);
+
+    expect(timestamp).toBeGreaterThan(0);
   });
 });
 
@@ -59,47 +114,6 @@ describe("Array delete by ID should delete users by their ID", () => {
         },
       },
     ]);
-  });
-
- 
-  afterAll(() => {
-    fs.writeFileSync("db.json", JSON.stringify({ users: originalUsers }));
-  });
-});
-
-describe("Create a new user", () => {
-  let originalUsers;
-  beforeAll(() => {
-    const data = fs.readFileSync("db.json", "utf8");
-    originalUsers = JSON.parse(data).users;
-  });
-
-  test("Adds a new user and returns the user with  of user created timestamp", () => {
-    const newUser = {
-      id: 3,
-      username: "Sara",
-      name: "Sara Mic",
-      email: "sara@gmail.com",
-      age: 30,
-      address: {
-        street: "123 calgary SW",
-        city: "Calgary",
-        Provence: "AB",
-        zipcode: "234",
-        country: "CA",
-      },
-    };
-
-    const startTime = Date.now();
-    users.push(newUser);
-    const endTime = Date.now();
-
-    expect(users.length).toBe(originalUsers.length + 1);
-    expect(users[users.length - 1]).toEqual(newUser); //check the references
-
-    const userTimestamp = endTime - startTime;
-
-    return { user: newUser, timestamp: userTimestamp };
   });
 
   afterAll(() => {
