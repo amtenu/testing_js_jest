@@ -30,8 +30,6 @@ describe("Filter function", () => {
   });
 });
 
-
-
 describe("Array delete by ID should delete users by their ID", () => {
   let originalUsers;
 
@@ -63,7 +61,47 @@ describe("Array delete by ID should delete users by their ID", () => {
     ]);
   });
 
-  // Ensure to restore the original users after all tests are done
+ 
+  afterAll(() => {
+    fs.writeFileSync("db.json", JSON.stringify({ users: originalUsers }));
+  });
+});
+
+describe("Create a new user", () => {
+  let originalUsers;
+  beforeAll(() => {
+    const data = fs.readFileSync("db.json", "utf8");
+    originalUsers = JSON.parse(data).users;
+  });
+
+  test("Adds a new user and returns the user with  of user created timestamp", () => {
+    const newUser = {
+      id: 3,
+      username: "Sara",
+      name: "Sara Mic",
+      email: "sara@gmail.com",
+      age: 30,
+      address: {
+        street: "123 calgary SW",
+        city: "Calgary",
+        Provence: "AB",
+        zipcode: "234",
+        country: "CA",
+      },
+    };
+
+    const startTime = Date.now();
+    users.push(newUser);
+    const endTime = Date.now();
+
+    expect(users.length).toBe(originalUsers.length + 1);
+    expect(users[users.length - 1]).toEqual(newUser); //check the references
+
+    const userTimestamp = endTime - startTime;
+
+    return { user: newUser, timestamp: userTimestamp };
+  });
+
   afterAll(() => {
     fs.writeFileSync("db.json", JSON.stringify({ users: originalUsers }));
   });
